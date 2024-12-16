@@ -37,37 +37,37 @@ class EnemyAI:
         self.epsilon = max(0.01, self.epsilon * self.epsilon_decay)
 
 def play_game():
-    action_space = [-1, 0, 1]  # -1: Sola, 0: Dur, 1: Sağa
+    action_space = [-1, 0, 1]  # -1 left +1 right
     ai = EnemyAI(action_space)
 
     player_pos = 5
     enemy_pos = 0
-    game_length = 20  # Oyun alanı uzunluğu
+    game_length = 20  
 
-    for episode in range(50):  # 50 tur
+    for episode in range(50):  # 50 laps
         print(f"Episode {episode + 1}")
-        for step in range(20):  # Her turda 20 hamle
+        for step in range(20):  # 20 move
             print("-" * game_length)
-            print(" " * player_pos + "P")  # Oyuncunun pozisyonu
-            print(" " * enemy_pos + "E")  # Düşmanın pozisyonu
+            print(" " * player_pos + "P")  
+            print(" " * enemy_pos + "E")  
             print("-" * game_length)
 
             state = [enemy_pos, player_pos]
             action = ai.choose_action(state)
 
-            # AI hareketi
+            # ai movement
             enemy_pos = max(0, min(game_length - 1, enemy_pos + action))
 
-            # Oyuncu hareketi
+            # player movement
             move = input("Move (a: left, d: right, s: stay): ").lower()
             if move == "a":
                 player_pos = max(0, player_pos - 1)
             elif move == "d":
                 player_pos = min(game_length - 1, player_pos + 1)
 
-            # Ödül: Düşman oyuncuya yaklaştığında pozitif, uzaklaştığında negatif
+            # Reward: Positive when the enemy approaches the player, negative when the enemy moves away
             distance = abs(enemy_pos - player_pos)
-            reward = -distance  # Daha yakında olmak ödül kazandırır
+            reward = -distance  # closer wins reward
             next_state = [enemy_pos, player_pos]
 
             ai.learn(state, action, reward, next_state)
